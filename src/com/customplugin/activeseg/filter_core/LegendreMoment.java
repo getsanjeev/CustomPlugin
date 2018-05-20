@@ -110,7 +110,7 @@ public class LegendreMoment {
 
 
     public static void main(String[] args){
-        String path="/media/albus/Horcrux/CustomPlugin/test_images/ramp.jpg";
+        String path="/media/albus/Horcrux/CustomPlugin/test_images/self_test.png";
         ImagePlus imp=IJ.openImage(path);
         ImageConverter ic=new ImageConverter(imp);
         ic.convertToGray8();
@@ -122,8 +122,8 @@ public class LegendreMoment {
 
         zm.run_some_tests();
 
-        /*double [][] moment = zm.extractLegendreMoment(ip);
-        print_array(moment,zm.degree_m+1,zm.degree_n+1);*/
+        //double [][] moment = zm.extractLegendreMoment(ip);
+        //print_array(moment,zm.degree_m+1,zm.degree_n+1);
     }
 
 
@@ -149,13 +149,19 @@ public class LegendreMoment {
 
         // Legendre polynomial test
         // Values taken for check are from Mathematica LegendreP() function
+        M = 10;
+        for(int i=1;i<=10;i++){
+            double x = (2*(double)i-M-1.0)/(M-1);
+            System.out.println("order "+ i+ " index "+i + " x "+x);
+            System.out.println(get_P(x,i));
+        }
 
         int m = 10;
         int n = 10;
         LegendreMoment lm = new LegendreMoment(m,n);
 
         // x,order,value
-        System.out.println("189,0");
+        /*System.out.println("189,0");
         System.out.println("1");
         System.out.println(lm.get_P(189,0));
         System.out.println();
@@ -233,7 +239,7 @@ public class LegendreMoment {
         System.out.println("0.9,9");
         System.out.println("-0.3695104859765625");
         System.out.println(lm.get_P(0.9,9));
-        System.out.println();
+        System.out.println();*/
 
     }
 

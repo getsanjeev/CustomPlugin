@@ -10,7 +10,7 @@ import ij.process.ImageProcessor;
  */
 
 
-public class LegendreMoments_v2 {
+public class LegendreMoments_zoa {
 
     private int degree_m;
     private int degree_n;
@@ -18,7 +18,7 @@ public class LegendreMoments_v2 {
     private double [][] polynomial_matrix_Y;
     private int M,N;
 
-    LegendreMoments_v2(int degree_m, int degree_n){
+    LegendreMoments_zoa(int degree_m, int degree_n){
         this.degree_m = degree_m;
         this.degree_n = degree_n;
     }
@@ -45,7 +45,8 @@ public class LegendreMoments_v2 {
 
     public double[][] extractLegendreMoment(ImageProcessor ip){
 
-        System.out.println("Start Legendre moment extraction process");
+        System.out.println("Start Legendre moment extraction process...");
+        System.out.println();
 
         // Height and width of image
         M = ip.getHeight();

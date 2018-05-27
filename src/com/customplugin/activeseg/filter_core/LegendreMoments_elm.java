@@ -1,0 +1,182 @@
+package com.customplugin.activeseg.filter_core;
+
+import ij.process.ImageProcessor;
+
+import java.awt.*;
+
+/* References -
+    1. http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/SHUTLER3/node10.html
+    2. FAST COMPUTATION OF LEGENDRE AND ZERNIKE MOMENTS https://www.sciencedirect.com/science/article/pii/003132039500011N
+    3. An Efficient Method for the Computation of Legendre Moments  IEEE TRANSACTIONS ON PATTERN ANALYSIS AND MACHINE INTELLIGENCE, VOL. 27, NO. 12, DECEMBER 2005
+        (Zero Order Approximation method has been followed)
+ */
+
+
+public class LegendreMoments_elm {
+
+    private int degree_m;
+    private int degree_n;
+    private int highest_degree;
+    private double [][] matrix_B;
+    private double [][] matrix_Q_m;
+    private double [][] matrix_Q_n;
+    private int M,N;
+    int Dm, Dn;
+    int highest_dx;
+
+    LegendreMoments_elm(int degree_m, int degree_n){
+        this.degree_m = degree_m;
+        this.degree_n = degree_n;
+
+        Dm = degree_m==0 ? degree_m/2 : (degree_m-1)/2;
+        Dn = degree_n==0 ? degree_n/2 : (degree_n-1)/2;
+        highest_degree = degree_m>degree_n ? degree_m:degree_n;
+        highest_dx = Dm>Dn ? Dm : Dn;
+        matrix_B = new double[highest_dx+1][highest_degree+1];
+    }
+
+    // takes value of x, calculates and stores value of - P0(x),P1(x),...,Pdegree_m(x)
+    // i.e all polynomials of order 0 to degree_m using the recursive definition of Legendre Polynomials
+
+    public double calculate_B(int k, int n, double [][] B){
+        if(k==0 && n ==0){
+            return 1.0;
+        }
+        else if(k==0){
+            return (2.0*n-1)*calculate_B(k,n-1,B)/(n+1);
+        }
+        else if(k==1 && n==0){
+            return 0;
+        }
+        else if(B[k][n]!= 0.0){
+            return B[k][n];
+        }
+        else{
+            return ((-1.0)*(n-k+1)*(n-2*k+3)*(n-2*k+2)*calculate_B(k-1,n,B))/((2*n-2*k+2)*(2*n-2*k+1)*k);
+        }
+    }
+
+    // Returns Legendre moment of image of degree (m+n) in form of array of m*n
+
+    public double[][] extractLegendreMoment(ImageProcessor ip){
+
+        System.out.println("Start Legendre moment extraction process...");
+        System.out.println();
+
+        // Height and width of image
+        M = ip.getHeight();
+        N = ip.getWidth();
+        System.out.println("M "+M+" N "+N+" highest_degree by2 "+(highest_degree+1)/2);
+
+        // initialise Matrix B with 0
+        for(int i=0;i<=highest_dx;i++){
+            for(int j=0;j<=highest_degree;j++){
+                matrix_B[i][j] = 0.0;
+            }
+        }
+
+
+        // Calculating matrix B(k,n)
+        for(int i=0;i<=highest_dx;i++){
+            for(int j=0;j<=highest_degree;j++){
+                matrix_B[i][j] = calculate_B(i,j,matrix_B);
+            }
+        }
+
+        System.out.println("MATRIX B");
+        utility.print_array(matrix_B,highest_dx+1,highest_degree+1);
+
+        matrix_Q_m = new double[M][degree_m+1];
+        matrix_Q_n = new double[N][degree_n+1];
+
+        double DEL_X = 2.0/M;
+        double DEL_Y = 2.0/N;
+
+        System.out.println("DELX "+DEL_X+"  DELY "+DEL_Y);
+
+        double value;
+        double x_i;
+        int p;
+
+        // Calculating matrix Qm(x_i)
+
+        for (int i=0;i<M;i++){
+            x_i = -1.0+(i+0.5)*DEL_X;
+            System.out.println("xi "+x_i);
+            for(int n=0;n<=degree_m;n++){
+                value= 0.0;
+                for(int k=0;k<=Dm;k++){
+                    System.out.println("i "+i+"  n "+n+" k "+k);
+                    p = n-2*k+1;
+                    System.out.println("matrix B "+matrix_B[k][n]);
+                    System.out.println("ZIP "+(Math.pow(x_i+DEL_X/2,p)-Math.pow(x_i-DEL_X/2,p)));
+                    value = value + matrix_B[k][n]*(Math.pow(x_i+DEL_X/2,p)-Math.pow(x_i-DEL_X/2,p));
+                }
+                System.out.println("value "+value);
+                matrix_Q_m[i][n] = (2*n+1)*value/2;
+                System.out.println("matrix_value "+matrix_Q_m[i][n]);
+                System.out.println();
+            }
+            System.out.println();
+            System.out.println();
+            System.out.println();
+        }
+
+        System.out.println("MATRIX Qm");
+
+        utility.print_array(matrix_Q_m,M,degree_m+1);
+
+        // Calculating matrix Qn(y_i)
+
+        for (int i=0;i<N;i++){
+            x_i = -1+(i+0.5)*DEL_Y;
+            for(int n=0;n<=degree_n;n++){
+                value= 0.0;
+                for(int k=0;k<=Dn;k++){
+                    p = n-2*k+1;
+                    value = value + matrix_B[k][n]*(Math.pow(x_i+DEL_Y/2,p)-Math.pow(x_i-DEL_Y/2,p));
+                }
+                matrix_Q_n[i][n] = (2*n+1)*value/2;
+            }
+        }
+
+        System.out.println("MATRIX Qn");
+
+        utility.print_array(matrix_Q_n,N,degree_n+1);
+
+        // Matrix which stores the Legendre moments up to order (m+n)
+        double[][] moment_matrix = new double[degree_m+1][degree_n+1];
+
+        // Calculation of moments (for each pair (m,n)) using the zero order approximation definition using kernel-trick
+
+        double moment_value;
+        for(int m= 0;m<=degree_m;m++) {
+            for (int n = 0; n <= degree_n; n++) {
+                moment_value = 0.0;
+                for(int i=0;i<M;i++){
+                    System.out.println("READ "+matrix_Q_m[i][m]);
+                    moment_value = moment_value + matrix_Q_m[i][m]*row_moment(i,n,N,ip);
+                }
+                moment_matrix[m][n] = (2*m+1)*moment_value/M;
+                break;
+            }
+            break;
+        }
+
+        //return Legendre moments in form 3*3 matrix
+        return moment_matrix;
+    }
+
+    // returns nth order moment of the ith row, used in kernel-trick
+
+    public double row_moment(int i, int n, int N, ImageProcessor ip){
+        double row_moment_value = 0.0;
+        for(int j=0;j<N;j++){
+            System.out.println("READ2 "+matrix_Q_m[j][n]);
+            row_moment_value = row_moment_value + matrix_Q_n[j][n]*ip.getPixel(i,j);
+        }
+        System.out.println();
+        return (2*n+1)*row_moment_value/N;
+    }
+
+}

@@ -28,8 +28,8 @@ public class LegendreMoments_elm {
         this.degree_m = degree_m;
         this.degree_n = degree_n;
 
-        Dm = degree_m==0 ? degree_m/2 : (degree_m-1)/2;
-        Dn = degree_n==0 ? degree_n/2 : (degree_n-1)/2;
+        Dm = degree_m%2==0 ? degree_m/2 : (degree_m-1)/2;
+        Dn = degree_n%2==0 ? degree_n/2 : (degree_n-1)/2;
         highest_degree = degree_m>degree_n ? degree_m:degree_n;
         highest_dx = Dm>Dn ? Dm : Dn;
         matrix_B = new double[highest_dx+1][highest_degree+1];
@@ -66,7 +66,6 @@ public class LegendreMoments_elm {
         // Height and width of image
         M = ip.getHeight();
         N = ip.getWidth();
-        System.out.println("M "+M+" N "+N+" highest_degree by2 "+(highest_degree+1)/2);
 
         // initialise Matrix B with 0
         for(int i=0;i<=highest_dx;i++){
@@ -83,56 +82,40 @@ public class LegendreMoments_elm {
             }
         }
 
-        System.out.println("MATRIX B");
-        utility.print_array(matrix_B,highest_dx+1,highest_degree+1);
-
         matrix_Q_m = new double[M][degree_m+1];
         matrix_Q_n = new double[N][degree_n+1];
 
         double DEL_X = 2.0/M;
         double DEL_Y = 2.0/N;
 
-        System.out.println("DELX "+DEL_X+"  DELY "+DEL_Y);
-
         double value;
         double x_i;
         int p;
+        int dm,dn;
 
         // Calculating matrix Qm(x_i)
 
         for (int i=0;i<M;i++){
             x_i = -1.0+(i+0.5)*DEL_X;
-            System.out.println("xi "+x_i);
             for(int n=0;n<=degree_m;n++){
+                dm = n%2==0 ? n/2 : (n-1)/2;
                 value= 0.0;
-                for(int k=0;k<=Dm;k++){
-                    System.out.println("i "+i+"  n "+n+" k "+k);
+                for(int k=0;k<=dm;k++){
                     p = n-2*k+1;
-                    System.out.println("matrix B "+matrix_B[k][n]);
-                    System.out.println("ZIP "+(Math.pow(x_i+DEL_X/2,p)-Math.pow(x_i-DEL_X/2,p)));
                     value = value + matrix_B[k][n]*(Math.pow(x_i+DEL_X/2,p)-Math.pow(x_i-DEL_X/2,p));
                 }
-                System.out.println("value "+value);
                 matrix_Q_m[i][n] = (2*n+1)*value/2;
-                System.out.println("matrix_value "+matrix_Q_m[i][n]);
-                System.out.println();
             }
-            System.out.println();
-            System.out.println();
-            System.out.println();
         }
-
-        System.out.println("MATRIX Qm");
-
-        utility.print_array(matrix_Q_m,M,degree_m+1);
 
         // Calculating matrix Qn(y_i)
 
         for (int i=0;i<N;i++){
             x_i = -1+(i+0.5)*DEL_Y;
             for(int n=0;n<=degree_n;n++){
+                dn = n%2==0 ? n/2 : (n-1)/2;
                 value= 0.0;
-                for(int k=0;k<=Dn;k++){
+                for(int k=0;k<=dn;k++){
                     p = n-2*k+1;
                     value = value + matrix_B[k][n]*(Math.pow(x_i+DEL_Y/2,p)-Math.pow(x_i-DEL_Y/2,p));
                 }
@@ -140,9 +123,6 @@ public class LegendreMoments_elm {
             }
         }
 
-        System.out.println("MATRIX Qn");
-
-        utility.print_array(matrix_Q_n,N,degree_n+1);
 
         // Matrix which stores the Legendre moments up to order (m+n)
         double[][] moment_matrix = new double[degree_m+1][degree_n+1];
@@ -154,13 +134,10 @@ public class LegendreMoments_elm {
             for (int n = 0; n <= degree_n; n++) {
                 moment_value = 0.0;
                 for(int i=0;i<M;i++){
-                    System.out.println("READ "+matrix_Q_m[i][m]);
                     moment_value = moment_value + matrix_Q_m[i][m]*row_moment(i,n,N,ip);
                 }
-                moment_matrix[m][n] = (2*m+1)*moment_value/M;
-                break;
+                moment_matrix[m][n] = moment_value;
             }
-            break;
         }
 
         //return Legendre moments in form 3*3 matrix
@@ -172,11 +149,9 @@ public class LegendreMoments_elm {
     public double row_moment(int i, int n, int N, ImageProcessor ip){
         double row_moment_value = 0.0;
         for(int j=0;j<N;j++){
-            System.out.println("READ2 "+matrix_Q_m[j][n]);
             row_moment_value = row_moment_value + matrix_Q_n[j][n]*ip.getPixel(i,j);
         }
-        System.out.println();
-        return (2*n+1)*row_moment_value/N;
+        return row_moment_value;
     }
 
 }

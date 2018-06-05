@@ -13,7 +13,6 @@ public class utility {
         ic.convertToGray8();
         ImageProcessor ip = imp.getProcessor();
 
-
         System.out.println("Displaying the image pixels");
         display_image(ip);
 

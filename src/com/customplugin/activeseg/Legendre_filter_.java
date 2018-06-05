@@ -2,14 +2,14 @@ package com.customplugin.activeseg;
 
 
 import activeSegmentation.IFilter;
+import com.customplugin.activeseg.filter_core.LegendreMoments_elm;
 import ij.IJ;
 import ij.Prefs;
 import ij.process.ImageProcessor;
+import ijaux.scale.Pair;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 
 /**
@@ -18,20 +18,12 @@ import java.util.Properties;
 
 public class Legendre_filter_ implements IFilter {
 
-
 	public static boolean debug=IJ.debugMode;
-	public final static String SIGMA="LOG_sigma", LEN="G_len",MAX_LEN="G_MAX", ISSEP="G_SEP", SCNORM="G_SCNORM";
+	public final static String DEGREE = "Degree";
 
-	private  int sz= Prefs.getInt(LEN, 2);
-	private  int max_sz= Prefs.getInt(MAX_LEN, 8);
-	public  boolean sep= Prefs.getBoolean(ISSEP, true);
-
-	public  boolean scnorm= Prefs.getBoolean(SCNORM, false);
-
-
+	private  int degree = Prefs.getInt(DEGREE, 5);
 	private boolean isEnabled=true;
-
-
+	private ArrayList<Pair<Pair<Integer, Integer>, Double>> moment_vector = new ArrayList<>();
 
 	/* NEW VARIABLES*/
 
@@ -44,22 +36,28 @@ public class Legendre_filter_ implements IFilter {
 	private final int TYPE=1;
 	// 1 Means Segmentation
 	// 2 Means Classification
+
 	private Map< String, String > settings= new HashMap<String, String>();
-
-
-
 
 	@Override
 	public void applyFilter(ImageProcessor image, String filterPath) {
-
-	
-
+	    filter(image);
 	}
 
-	
-
-
-
+	private void filter(ImageProcessor ip){
+        double moment_matrix[][] = new LegendreMoments_elm(degree,degree).extractLegendreMoment(ip);
+        Pair<Integer,Integer> order = new Pair<>(0,0);
+        Pair<Pair<Integer,Integer>,Double> one_moment = new Pair<>(order,0.0);
+        for(int i=0;i<=degree;i++){
+            for(int j=0;j<=degree;j++){
+                order.first = i;
+                order.second = j;
+                one_moment.first = order;
+                one_moment.second = moment_matrix[i][j];
+                moment_vector.add(one_moment);
+            }
+        }
+    }
 
 
 
@@ -69,39 +67,24 @@ public class Legendre_filter_ implements IFilter {
 	 * @param prefs
 	 */
 	public void savePreferences(Properties prefs) {
-		prefs.put(LEN, Integer.toString(sz));
-		prefs.put(ISSEP, Boolean.toString(sep));
-		prefs.put(SCNORM, Boolean.toString(scnorm));
-
+		prefs.put(DEGREE, Integer.toString(degree));
 	}
 
 	@Override
 	public Map<String, String> getDefaultSettings() {
-
-		settings.put(LEN, Integer.toString(sz));
-		settings.put(MAX_LEN, Integer.toString(max_sz));
-		settings.put(ISSEP, Boolean.toString(sep));
-		settings.put(SCNORM, Boolean.toString(scnorm));
-
+		settings.put(DEGREE, Integer.toString(degree));
 		return this.settings;
 	}
 
 	@Override
 	public boolean reset() {
-		sz= Prefs.getInt(LEN, 2);
-		max_sz= Prefs.getInt(MAX_LEN, 8);
-		sep= Prefs.getBoolean(ISSEP, true);
+		degree= Prefs.getInt(DEGREE, 5);
 		return true;
 	}
 
-
 	@Override
 	public boolean updateSettings(Map<String, String> settingsMap) {
-		sz=Integer.parseInt(settingsMap.get(LEN));
-		max_sz=Integer.parseInt(settingsMap.get(MAX_LEN));
-		sep=Boolean.parseBoolean(settingsMap.get(ISSEP));
-		scnorm=Boolean.parseBoolean(settingsMap.get(SCNORM));
-
+		degree=Integer.parseInt(settingsMap.get(DEGREE));
 		return true;
 	}
 
@@ -116,16 +99,8 @@ public class Legendre_filter_ implements IFilter {
 		return this.FILTER_NAME;
 	}
 
-
-
-
-
-
 	@Override
 	public Image getImage(){
-
-		
-
 		return null;
 	}
 
@@ -141,22 +116,16 @@ public class Legendre_filter_ implements IFilter {
 		this.isEnabled= isEnabled;
 	}
 
-
-
 	@Override
 	public int getFilterType() {
 		// TODO Auto-generated method stub
 		return this.TYPE;
 	}
 
-
-
 	@Override
-	public <T> T getFeatures() {
+	public ArrayList<Pair<Pair<Integer, Integer>, Double>> getFeatures() {
 		// TODO Auto-generated method stub
-		return null;
+		return moment_vector;
 	}
-
-
 
 }

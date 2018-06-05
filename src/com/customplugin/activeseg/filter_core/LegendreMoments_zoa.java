@@ -18,7 +18,7 @@ public class LegendreMoments_zoa {
     private double [][] polynomial_matrix_Y;
     private int M,N;
 
-    LegendreMoments_zoa(int degree_m, int degree_n){
+    public LegendreMoments_zoa(int degree_m, int degree_n){
         this.degree_m = degree_m;
         this.degree_n = degree_n;
     }
@@ -26,7 +26,7 @@ public class LegendreMoments_zoa {
     // takes value of x, calculates and stores value of - P0(x),P1(x),...,Pdegree_m(x)
     // i.e all polynomials of order 0 to degree_m using the recursive definition of Legendre Polynomials
 
-    public double calculate_polynomial(int order, double x, int index, double [][] polynomial_matrix){
+    private double calculate_polynomial(int order, double x, int index, double [][] polynomial_matrix){
         if(order==0){
             return 1.0;
         }
@@ -102,7 +102,7 @@ public class LegendreMoments_zoa {
 
     // returns nth order moment of the ith row
 
-    public double row_moment(int i, int n, int N, ImageProcessor ip){
+    private double row_moment(int i, int n, int N, ImageProcessor ip){
         double row_moment_value = 0.0;
         for(int j=0;j<N;j++){
             row_moment_value = row_moment_value + polynomial_matrix_Y[j][n]*(double)ip.getPixel(i,j);

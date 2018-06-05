@@ -20,10 +20,10 @@ public class LegendreMoments_elm {
     private double [][] matrix_Q_m;
     private double [][] matrix_Q_n;
     private int M,N;
-    int Dm, Dn;
-    int highest_dx;
+    private int Dm, Dn;
+    private int highest_dx;
 
-    LegendreMoments_elm(int degree_m, int degree_n){
+    public LegendreMoments_elm(int degree_m, int degree_n){
         this.degree_m = degree_m;
         this.degree_n = degree_n;
 
@@ -36,7 +36,7 @@ public class LegendreMoments_elm {
 
     // calculates and stores value of Bernoulli coefficients using the recursive definition
 
-    public double calculate_B(int k, int n, double [][] B){
+    private double calculate_B(int k, int n, double [][] B){
         if(k==0 && n ==0){
             return 1.0;
         }
@@ -136,7 +136,7 @@ public class LegendreMoments_elm {
 
     // returns nth order moment of the ith row,
 
-    public double row_moment(int i, int n, int N, ImageProcessor ip){
+    private double row_moment(int i, int n, int N, ImageProcessor ip){
         double row_moment_value = 0.0;
         for(int j=0;j<N;j++){
             row_moment_value = row_moment_value + matrix_Q_n[j][n]*(double) ip.getPixel(i,j);

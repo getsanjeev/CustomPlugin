@@ -2,8 +2,6 @@ package com.customplugin.activeseg.filter_core;
 
 import ij.process.ImageProcessor;
 
-import java.awt.*;
-
 /* References -
     1. http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/SHUTLER3/node10.html
     2. FAST COMPUTATION OF LEGENDRE AND ZERNIKE MOMENTS https://www.sciencedirect.com/science/article/pii/003132039500011N
@@ -60,19 +58,6 @@ public class LegendreMoments_kt {
         // Matrix containing value of polynomials at all y up to degree_n
         polynomial_matrix_Y = new double[N][degree_n+1];
 
-        // initialising with 0
-        for(int i=0;i<M;i++){
-            for(int j=0;j<=degree_m;j++){
-                polynomial_matrix_X[i][j] = 0.0;
-            }
-        }
-
-        // initialising with 0
-        for(int i=0;i<N;i++){
-            for(int j=0;j<=degree_n;j++){
-                polynomial_matrix_Y[i][j] = 0.0;
-            }
-        }
 
         // Calculating polynomial values for Px
         for(int i = 0;i<M;i++){
@@ -98,7 +83,7 @@ public class LegendreMoments_kt {
         // Matrix which stores the Legendre moments up to order (m+n)
         double[][] moment_matrix = new double[degree_m+1][degree_n+1];
 
-        // Calculation of moments (for each pair (m,n)) using the zero order approximation definition using kernel-trick
+        // Calculation of moments (for each pair (m,n)) using the zero order approximation definition
 
         double moment_value;
         for(int m= 0;m<=degree_m;m++) {
@@ -111,16 +96,16 @@ public class LegendreMoments_kt {
             }
         }
 
-        //return Legendre moments in form 3*3 matrix
+        //return Legendre moments in form degree_m*degree_n matrix
         return moment_matrix;
     }
 
-    // returns nth order moment of the ith row, used in kernel-trick
+    // returns nth order moment of the ith row
 
     public double row_moment(int i, int n, int N, ImageProcessor ip){
         double row_moment_value = 0.0;
         for(int j=0;j<N;j++){
-            row_moment_value = row_moment_value + polynomial_matrix_Y[j][n]*ip.getPixel(i,j);
+            row_moment_value = row_moment_value + polynomial_matrix_Y[j][n]*(double)ip.getPixel(i,j);
         }
         return (2*n+1)*row_moment_value/N;
     }

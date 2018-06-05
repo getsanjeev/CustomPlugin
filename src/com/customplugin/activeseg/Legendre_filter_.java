@@ -1,14 +1,10 @@
 package com.customplugin.activeseg;
 
 
+import activeSegmentation.IFilter;
 import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
 import ij.Prefs;
-
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ijaux.scale.GScaleSpace;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -16,29 +12,11 @@ import java.util.Map;
 import java.util.Properties;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import activeSegmentation.IFilter;
-
-
 /**
  */
 
 
-public class Custom_Filter_ implements IFilter {
+public class Legendre_filter_ implements IFilter {
 
 
 	public static boolean debug=IJ.debugMode;

@@ -10,7 +10,7 @@ import ij.process.ImageProcessor;
  */
 
 
-public class LegendreMoments_kt {
+public class LegendreMoments_zoa {
 
     private int degree_m;
     private int degree_n;
@@ -18,7 +18,7 @@ public class LegendreMoments_kt {
     private double [][] polynomial_matrix_Y;
     private int M,N;
 
-    LegendreMoments_kt(int degree_m, int degree_n){
+    LegendreMoments_zoa(int degree_m, int degree_n){
         this.degree_m = degree_m;
         this.degree_n = degree_n;
     }

@@ -5,13 +5,14 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Prefs;
-
+import ij.gui.Roi;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ijaux.scale.GScaleSpace;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -72,7 +73,7 @@ public class Custom_Filter_ implements IFilter {
 
 
 	@Override
-	public void applyFilter(ImageProcessor image, String filterPath) {
+	public void applyFilter(ImageProcessor image, String filterPath,List<Roi> roiList) {
 
 	
 

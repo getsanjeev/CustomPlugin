@@ -1,15 +1,17 @@
-package com.customplugin.activeseg;
+package com.customplugin.activeseg.filters;
 
 
 import activeSegmentation.IFilter;
 import com.customplugin.activeseg.filter_core.LegendreMoments_elm;
 import ij.IJ;
 import ij.Prefs;
+import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ijaux.scale.Pair;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -23,7 +25,12 @@ public class Legendre_filter_ implements IFilter {
 
 	private  int degree = Prefs.getInt(DEGREE, 5);
 	private boolean isEnabled=true;
-	private ArrayList<Pair<Pair<Integer, Integer>, Double>> moment_vector = new ArrayList<>();
+
+	/*List< Pair<String, T: Pair<Int[], Double>> with
+	int[0] m
+	int[1] n*/
+
+	private ArrayList<Pair<String,Pair<Integer[],Double>>> moment_vector = new ArrayList<>();
 
 	/* NEW VARIABLES*/
 
@@ -37,29 +44,26 @@ public class Legendre_filter_ implements IFilter {
 	// 1 Means Segmentation
 	// 2 Means Classification
 
-	private Map< String, String > settings= new HashMap<String, String>();
+	private Map<String, String> settings= new HashMap<String, String>();
 
-	@Override
-	public void applyFilter(ImageProcessor image, String filterPath) {
-	    filter(image);
-	}
 
-	private void filter(ImageProcessor ip){
+	public void filter(ImageProcessor ip,String roi_name){
         double moment_matrix[][] = new LegendreMoments_elm(degree,degree).extractLegendreMoment(ip);
-        Pair<Integer,Integer> order = new Pair<>(0,0);
-        Pair<Pair<Integer,Integer>,Double> one_moment = new Pair<>(order,0.0);
+        Integer[] order_index = new Integer[2];
+        Pair<Integer[],Double> order = new Pair<>(order_index,0.0);
+		Pair<String,Pair<Integer[],Double>> one_roi_moment = new Pair<>("",order);
         for(int i=0;i<=degree;i++){
             for(int j=0;j<=degree;j++){
-                order.first = i;
-                order.second = j;
-                one_moment.first = order;
-                one_moment.second = moment_matrix[i][j];
-                moment_vector.add(one_moment);
+            	order_index[0] = i;
+            	order_index[1] = j;
+            	order.first = order_index;
+            	order.second = moment_matrix[i][j];
+            	one_roi_moment.first = roi_name;
+            	one_roi_moment.second = order;
+                moment_vector.add(one_roi_moment);
             }
         }
     }
-
-
 
 	/* Saves the current settings of the plugin for further use
 	 * 
@@ -86,6 +90,23 @@ public class Legendre_filter_ implements IFilter {
 	public boolean updateSettings(Map<String, String> settingsMap) {
 		degree=Integer.parseInt(settingsMap.get(DEGREE));
 		return true;
+	}
+
+	@Override
+	public void applyFilter(ImageProcessor imageProcessor, String s, List<Roi> list) {
+
+		// if asked for moment of image, we do not have any use case where we need both at a time
+		if(imageProcessor!=null){
+			filter(imageProcessor,s);
+		}
+		// if asked for moment of ROIs
+		else {
+			if(list.size()<1){
+				for(int i=0;i<list.size();i++){
+					filter(list.get(i).getImage().getProcessor(),list.get(i).getName());
+				}
+			}
+		}
 	}
 
 	@Override
@@ -123,7 +144,7 @@ public class Legendre_filter_ implements IFilter {
 	}
 
 	@Override
-	public ArrayList<Pair<Pair<Integer, Integer>, Double>> getFeatures() {
+	public ArrayList<Pair<String,Pair<Integer[],Double>>> getFeatures() {
 		// TODO Auto-generated method stub
 		return moment_vector;
 	}

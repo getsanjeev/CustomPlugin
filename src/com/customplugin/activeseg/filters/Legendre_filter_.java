@@ -3,6 +3,7 @@ package com.customplugin.activeseg.filters;
 
 import activeSegmentation.IFilter;
 import com.customplugin.activeseg.filter_core.LegendreMoments_elm;
+import com.customplugin.activeseg.filter_core.utility;
 import ij.IJ;
 import ij.Prefs;
 import ij.gui.Roi;
@@ -23,7 +24,7 @@ public class Legendre_filter_ implements IFilter {
 	public static boolean debug=IJ.debugMode;
 	public final static String DEGREE = "Degree";
 
-	private  int degree = Prefs.getInt(DEGREE, 5);
+	private  int degree = Prefs.getInt(DEGREE, 3);
 	private boolean isEnabled=true;
 
 	/*List< Pair<String, T: Pair<Int[], Double>> with
@@ -49,11 +50,11 @@ public class Legendre_filter_ implements IFilter {
 
 	public void filter(ImageProcessor ip,String roi_name){
         double moment_matrix[][] = new LegendreMoments_elm(degree,degree).extractLegendreMoment(ip);
-        Integer[] order_index = new Integer[2];
-        Pair<Integer[],Double> order = new Pair<>(order_index,0.0);
-		Pair<String,Pair<Integer[],Double>> one_roi_moment = new Pair<>("",order);
         for(int i=0;i<=degree;i++){
             for(int j=0;j<=degree;j++){
+                Integer[] order_index = new Integer[2];
+                Pair<Integer[],Double> order = new Pair<>(order_index,0.0);
+                Pair<String,Pair<Integer[],Double>> one_roi_moment = new Pair<>("",order);
             	order_index[0] = i;
             	order_index[1] = j;
             	order.first = order_index;
@@ -82,7 +83,7 @@ public class Legendre_filter_ implements IFilter {
 
 	@Override
 	public boolean reset() {
-		degree= Prefs.getInt(DEGREE, 5);
+		degree= Prefs.getInt(DEGREE, 3);
 		return true;
 	}
 
@@ -94,19 +95,35 @@ public class Legendre_filter_ implements IFilter {
 
 	@Override
 	public void applyFilter(ImageProcessor imageProcessor, String s, List<Roi> list) {
+        System.out.println("okay in applyfilter");
+        int x1,x3,y1,y3,x_diff,y_diff;
+
+        // if asked for moment of ROIs
+        if(list.size()>0){
+            for(int i=0;i<list.size();i++){
+                x1 = list.get(i).getPolygon().xpoints[0];
+                y1 = list.get(i).getPolygon().ypoints[0];
+                x3 = list.get(i).getPolygon().xpoints[2];
+                y3 = list.get(i).getPolygon().ypoints[2];
+                x_diff = x3-x1;
+                y_diff = y3-y1;
+                System.out.println(x1+" "+y1+" "+x_diff+" "+y_diff);
+                //imageProcessor.setRoi(x1,y1,x_diff,y_diff);
+                imageProcessor.setRoi(list.get(i));
+                ImageProcessor ip_roi = imageProcessor.crop();
+                System.out.println("THE ROI IS "+list.get(i).getName());
+                utility.display_image(ip_roi);
+                filter(ip_roi,list.get(i).getName());
+                System.out.println("Size of list is "+ moment_vector.size());
+            }
+        }
 
 		// if asked for moment of image, we do not have any use case where we need both at a time
-		if(imageProcessor!=null){
+		else{
+            System.out.println("Image is not null");
 			filter(imageProcessor,s);
 		}
-		// if asked for moment of ROIs
-		else {
-			if(list.size()<1){
-				for(int i=0;i<list.size();i++){
-					filter(list.get(i).getImage().getProcessor(),list.get(i).getName());
-				}
-			}
-		}
+
 	}
 
 	@Override

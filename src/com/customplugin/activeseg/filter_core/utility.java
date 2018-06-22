@@ -31,6 +31,7 @@ public class utility {
 
     }
 
+
     public static void display_image(ImageProcessor ip){
         for(int i=0;i<ip.getHeight();i++){
             for(int j=0;j<ip.getWidth();j++){

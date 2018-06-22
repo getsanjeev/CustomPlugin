@@ -12,13 +12,19 @@ public class GLCMTextureDescriptors {
 	private double meany=0.0;
 	private double stdevx=0.0;
 	private double stdevy=0.0;
+
+	// No of gray levels, in a 8 bit Gray scale image, we have 256 different shades
 	private int GRAY_LEVELS = 256;
 
+
+	// d is the pixel distance, phi is direction angle
 
 	public GLCMTextureDescriptors(int d, int phi){
 		this.d = d;
 		this.phi = phi;
 	}
+
+	// Utility functions which calculates basic statistical values of GLCM matrix, used in calculation of various features
 
 	private void calculate_mean_variance(){
 		double [] px = new double [GRAY_LEVELS];
@@ -52,6 +58,8 @@ public class GLCMTextureDescriptors {
 
 	}
 
+	//returns second order Angular moment
+
 	public double getAngular2ndMoment(){
 		double asm = 0.0;
 		for (int i=0;  i<GRAY_LEVELS; i++)  {
@@ -62,6 +70,7 @@ public class GLCMTextureDescriptors {
 		return asm;
 	}
 
+	// returns dissimilarity
 
 	public double getDissimilarity(){
 		double ds=0.0;
@@ -74,6 +83,8 @@ public class GLCMTextureDescriptors {
 		return ds;
 	}
 
+	//returns contrast
+
 	public double getContrast(){
 		double contrast=0.0;
 
@@ -85,9 +96,13 @@ public class GLCMTextureDescriptors {
 		return contrast;
 	}
 
+	//returns energy
+
 	public double getEnergy(){
 		return Math.pow(getAngular2ndMoment(),0.5);
 	}
+
+	//returns entropy, measure of randomness
 
 	public double getEntropy(){
 		double entropy = 0.0;
@@ -100,6 +115,8 @@ public class GLCMTextureDescriptors {
 		}
 		return entropy;
 	}
+	
+	//returns homogeneity
 
 	public double getHomogeneity(){
 		double homogeneity = 0.0;
@@ -110,6 +127,8 @@ public class GLCMTextureDescriptors {
 		}
 		return homogeneity;
 	}
+
+	//returns correlation
 
 	public double getCorrelation(){
 		double correlation=0.0;
@@ -125,6 +144,8 @@ public class GLCMTextureDescriptors {
 	}
 
 
+	//Here extraction of GLCM starts, returns normalised GLCM
+
 	public double [][] extractGLCMDescriptors(ImageProcessor ip){
 		// use the bounding rectangle ROI to roughly limit processing
 		Rectangle roi = ip.getRoi();
@@ -134,7 +155,6 @@ public class GLCMTextureDescriptors {
 		byte [] pixels = (byte []) ip.getPixels();
 		byte [] mask = ip.getMaskArray();
 
-		// value = value at pixel of interest; dValue = value of pixel at offset    
 		int value;
 		int dValue;
 		double pixelCount = 0;
@@ -147,16 +167,12 @@ public class GLCMTextureDescriptors {
 		offsetX = (int) (d* Math.round(Math.cos(rad)));
 		offsetY = (int) (d* Math.round(Math.sin(rad)));
 
-		// loop through the pixels in the ROI bounding rectangle
 		for (int y=roi.y; y<(roi.y + roi.height); y++) 	{
 			for (int x=roi.x; x<(roi.x + roi.width); x++)	 {
-				// check to see if the pixel is in the mask (if it exists)
 				if ((mask == null) || ((0xff & mask[(((y-roi.y)*roi.width)+(x-roi.x))]) > 0) ) {
-					// check to see if the offset pixel is in the roi
 					int dx = x + offsetX;
 					int dy = y + offsetY;
 					if ( ((dx >= roi.x) && (dx < (roi.x+roi.width))) && ((dy >= roi.y) && (dy < (roi.y+roi.height))) ) {
-						// check to see if the offset pixel is in the mask (if it exists) 
 						if ((mask == null) || ((0xff & mask[(((dy-roi.y)*roi.width)+(dx-roi.x))]) > 0) ) {
 							value = 0xff & pixels[(y*width)+x];
 							dValue = 0xff & pixels[(dy*width) + dx];
@@ -168,19 +184,12 @@ public class GLCMTextureDescriptors {
 			}
 		}
 
-		/*System.out.println("The GLCM matrix is:");
-		utility.print_array(glcm,0,10,0,10);*/
-
-
 		// convert the GLCM to Normalised-GLCM
 		for (int i=0; i<GRAY_LEVELS; i++)  {
 			for (int j=0; j<GRAY_LEVELS; j++) {
 				glcm[i][j] = (glcm[i][j])/(pixelCount);
 			}
 		}
-
-		/*System.out.println("The normalised GLCM matrix is:");
-		utility.print_array(glcm,0,10,0,10);*/
 
 		calculate_mean_variance();
 

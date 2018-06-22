@@ -7,16 +7,34 @@ import ij.process.ImageProcessor;
 
 public class utility {
     public static void main(String[] args){
-        String path="/media/albus/Horcrux/CustomPlugin/test_images/test2_artificial.png";
+        String path="/media/albus/Horcrux/CustomPlugin/test_images/glcm_unity_test.png";
         ImagePlus imp=IJ.openImage(path);
         ImageConverter ic=new ImageConverter(imp);
         ic.convertToGray8();
         ImageProcessor ip = imp.getProcessor();
 
         System.out.println("Displaying the image pixels");
-        display_image(ip);
+        display_image(ip,0,10,0,10);
 
-        int degree_m = 3;
+        GLCMTextureDescriptors glcm = new GLCMTextureDescriptors(1,270);
+        glcm.extractGLCMDescriptors(ip);
+        System.out.println("Entropy "+glcm.getEntropy()); //Okay
+        System.out.println("AM "+glcm.getAngular2ndMoment()); //OKay
+        System.out.println("Correlation "+glcm.getCorrelation());// Okay
+        System.out.println("Homogeneity "+glcm.getHomogeneity()); //Okay
+        System.out.println("Energy "+glcm.getEnergy());//Okay
+        System.out.println("Contrast "+glcm.getContrast());
+        System.out.println("Dissimilarity "+glcm.getDissimilarity());
+
+        glcm.getCorrelation();
+        glcm.getEnergy();
+        glcm.getEntropy();
+        glcm.getHomogeneity();
+        glcm.getInertia();
+
+
+
+        /*int degree_m = 3;
         int degree_n = 3;
 
         LegendreMoments_elm zm2=new LegendreMoments_elm(degree_m,degree_n);
@@ -27,7 +45,9 @@ public class utility {
         LegendreMoments_zoa zm=new LegendreMoments_zoa(degree_m,degree_n);
         double[][] legendreMoment_matrix = zm.extractLegendreMoment(ip);
         System.out.println("The Legendre moments using zoa are: ");
-        print_array(legendreMoment_matrix,degree_m+1,degree_n+1);
+        print_array(legendreMoment_matrix,degree_m+1,degree_n+1);*/
+
+
 
     }
 
@@ -43,6 +63,18 @@ public class utility {
         System.out.println();
     }
 
+    public static void display_image(ImageProcessor ip,int start_x,int end_x, int start_y, int end_y){
+        for(int i=start_x;i<end_x;i++){
+            for(int j=start_y;j<end_y;j++){
+                System.out.print(ip.getPixel(i,j)+" ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+        System.out.println();
+    }
+
+
     public static void print_array(double[][]array,int m,int n){
         System.out.println();
         for(int i=0;i<m;i++){
@@ -53,5 +85,23 @@ public class utility {
         }
         System.out.println();
         System.out.println();
+    }
+
+    public static void print_array(double[][]array,int start_x,int end_x,int start_y, int end_y){
+        System.out.println();
+        for(int i=start_x;i<end_x;i++){
+            for(int j=start_y;j<end_y;j++){
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+        System.out.println();
+    }
+
+    public static void print_array(double [] array){
+        for(int i=0;i<array.length;i++){
+            System.out.println(array[i]+" ");
+        }
     }
 }

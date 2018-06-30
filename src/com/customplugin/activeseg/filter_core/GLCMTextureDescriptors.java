@@ -7,21 +7,31 @@ public class GLCMTextureDescriptors {
 
 	private int d;
 	private int phi;
-	private double [][] glcm;
+	private double [][] glcm ;
 	private double meanx=0.0;
 	private double meany=0.0;
 	private double stdevx=0.0;
 	private double stdevy=0.0;
 
 	// No of gray levels, in a 8 bit Gray scale image, we have 256 different shades
-	private int GRAY_LEVELS = 256;
+	private final int GRAY_LEVELS = 256;
 
 
 	// d is the pixel distance, phi is direction angle
 
-	public GLCMTextureDescriptors(int d, int phi){
-		this.d = d;
-		this.phi = phi;
+	public GLCMTextureDescriptors(){
+		/*this.d = d;
+		this.phi = phi;*/
+		glcm = new double [GRAY_LEVELS][GRAY_LEVELS];
+	}
+
+	// re-initialise GLCM so that it can be used for calculation of GLCM at different d-s and phi-s, with same object
+	private void reinitialize_glcm(){
+		for(int i=0;i<GRAY_LEVELS;i++){
+			for (int j=0;j<GRAY_LEVELS;j++){
+				glcm[i][j] = 0.0;
+			}
+		}
 	}
 
 	// Utility functions which calculates basic statistical values of GLCM matrix, used in calculation of various features
@@ -115,7 +125,7 @@ public class GLCMTextureDescriptors {
 		}
 		return entropy;
 	}
-	
+
 	//returns homogeneity
 
 	public double getHomogeneity(){
@@ -147,6 +157,7 @@ public class GLCMTextureDescriptors {
 	//Here extraction of GLCM starts, returns normalised GLCM
 
 	public double [][] extractGLCMDescriptors(ImageProcessor ip){
+		reinitialize_glcm();
 		// use the bounding rectangle ROI to roughly limit processing
 		Rectangle roi = ip.getRoi();
 		// get byte arrays for the image pixels and mask pixels
@@ -154,22 +165,20 @@ public class GLCMTextureDescriptors {
 		int height = ip.getHeight();
 		byte [] pixels = (byte []) ip.getPixels();
 		byte [] mask = ip.getMaskArray();
-
 		int value;
 		int dValue;
 		double pixelCount = 0;
 
 		int offsetX;
 		int offsetY;
-		glcm = new double [GRAY_LEVELS][GRAY_LEVELS];
 
 		double rad = Math.toRadians(-1.0 * phi);
 		offsetX = (int) (d* Math.round(Math.cos(rad)));
 		offsetY = (int) (d* Math.round(Math.sin(rad)));
 
 		for (int y=roi.y; y<(roi.y + roi.height); y++) 	{
-			for (int x=roi.x; x<(roi.x + roi.width); x++)	 {
-				if ((mask == null) || ((0xff & mask[(((y-roi.y)*roi.width)+(x-roi.x))]) > 0) ) {
+			for (int x=roi.x; x<(roi.x + roi.width); x++){
+				if ((mask == null) || ((0xff & mask[(((y-roi.y)*roi.width)+(x-roi.x))]) > 0)) {
 					int dx = x + offsetX;
 					int dy = y + offsetY;
 					if ( ((dx >= roi.x) && (dx < (roi.x+roi.width))) && ((dy >= roi.y) && (dy < (roi.y+roi.height))) ) {
@@ -179,7 +188,7 @@ public class GLCMTextureDescriptors {
 							glcm [value][dValue]++;		  			
 							pixelCount++;
 						}
-					}  
+					}
 				}
 			}
 		}
@@ -194,6 +203,12 @@ public class GLCMTextureDescriptors {
 		calculate_mean_variance();
 
 		return glcm;
+	}
+
+	// for reuse of GLCMTextureDescriptors object with different d-s and phi-s
+	public void set_values(int d, int phi){
+		this.d = d;
+		this.phi = phi;
 	}
 
 }

@@ -30,13 +30,15 @@ public class Legendre_filter_ implements IFilter {
 	/*List< Pair<String, T: Pair<Int[], Double>> with
 	int[0] m
 	int[1] n*/
+	private ArrayList<Pair<String,Pair<String[],Double>>> moment_vector = new ArrayList<>();
 
-	private ArrayList<Pair<String,Pair<Integer[],Double>>> moment_vector = new ArrayList<>();
+	//private Pair<String,Pair<String[],Double>> moment_vector = new Pair<String,Pair<String[],Double>>[33];
 
 	/* NEW VARIABLES*/
 
 	/** A string key identifying this factory. */
 	private final  String FILTER_KEY = "LM";
+	public static final String LM_FEATURE_KEY = "LM";
 
 	/** The pretty name of the target detector. */
 	private final String FILTER_NAME = "Legendre Moment Filter";
@@ -45,18 +47,19 @@ public class Legendre_filter_ implements IFilter {
 	// 1 Means Segmentation
 	// 2 Means Classification
 
-	private Map<String, String> settings= new HashMap<String, String>();
+	private Map<String, String> settings= new HashMap<>();
 
 
 	public void filter(ImageProcessor ip,String roi_name){
         double moment_matrix[][] = new LegendreMoments_elm(degree,degree).extractLegendreMoment(ip);
         for(int i=0;i<=degree;i++){
             for(int j=0;j<=degree;j++){
-                Integer[] order_index = new Integer[2];
-                Pair<Integer[],Double> order = new Pair<>(order_index,0.0);
-                Pair<String,Pair<Integer[],Double>> one_roi_moment = new Pair<>("",order);
-            	order_index[0] = i;
-            	order_index[1] = j;
+                String[] order_index = new String[3];
+                Pair<String[],Double> order = new Pair<>(order_index,0.0);
+                Pair<String,Pair<String[],Double>> one_roi_moment = new Pair<>("",order);
+                order_index[0] = LM_FEATURE_KEY;
+            	order_index[1] = Integer.toString(i);
+            	order_index[2] = Integer.toString(j);
             	order.first = order_index;
             	order.second = moment_matrix[i][j];
             	one_roi_moment.first = roi_name;
@@ -95,32 +98,18 @@ public class Legendre_filter_ implements IFilter {
 
 	@Override
 	public void applyFilter(ImageProcessor imageProcessor, String s, List<Roi> list) {
-        System.out.println("okay in applyfilter");
-        int x1,x3,y1,y3,x_diff,y_diff;
-
         // if asked for moment of ROIs
-        if(list.size()>0){
+        if(list != null && list.size()>0){
             for(int i=0;i<list.size();i++){
-                x1 = list.get(i).getPolygon().xpoints[0];
-                y1 = list.get(i).getPolygon().ypoints[0];
-                x3 = list.get(i).getPolygon().xpoints[2];
-                y3 = list.get(i).getPolygon().ypoints[2];
-                x_diff = x3-x1;
-                y_diff = y3-y1;
-                System.out.println(x1+" "+y1+" "+x_diff+" "+y_diff);
-                //imageProcessor.setRoi(x1,y1,x_diff,y_diff);
                 imageProcessor.setRoi(list.get(i));
                 ImageProcessor ip_roi = imageProcessor.crop();
-                System.out.println("THE ROI IS "+list.get(i).getName());
-                utility.display_image(ip_roi);
+                //utility.display_image(ip_roi);
                 filter(ip_roi,list.get(i).getName());
-                System.out.println("Size of list is "+ moment_vector.size());
             }
         }
 
 		// if asked for moment of image, we do not have any use case where we need both at a time
 		else{
-            System.out.println("Image is not null");
 			filter(imageProcessor,s);
 		}
 
@@ -161,7 +150,7 @@ public class Legendre_filter_ implements IFilter {
 	}
 
 	@Override
-	public ArrayList<Pair<String,Pair<Integer[],Double>>> getFeatures() {
+	public ArrayList<Pair<String,Pair<String[],Double>>> getFeatures() {
 		// TODO Auto-generated method stub
 		return moment_vector;
 	}

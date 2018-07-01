@@ -7,6 +7,8 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import ijaux.scale.Pair;
+
 import java.util.ArrayList;
 
 import static com.customplugin.activeseg.filter_core.utility.display_image;
@@ -24,10 +26,11 @@ public class Legendre_moment_tests {
 
     public static void main(String[] args){
 
-        if(check_return_encodings()){
+        if(check_moment_values()){
             System.out.println("THE APPROXIMATIONS ARE CORRECT");
         }
-        if(check_moment_values()){
+
+        if(check_return_encodings()){
             System.out.println("ENCODINGS ARE CORRECT");
         }
     }
@@ -59,7 +62,7 @@ public class Legendre_moment_tests {
         }
 
         if(passed){
-            System.out.println("TEST PASSED SUCCESSFULLY FOR EXACT MOMENT CALCULATION fOR CONSTANT UNITY IMAGE");
+            //System.out.println("TEST PASSED SUCCESSFULLY FOR EXACT MOMENT CALCULATION fOR CONSTANT UNITY IMAGE");
         }
         else {
             System.out.println("BAD APPROXIMATION");
@@ -73,7 +76,6 @@ public class Legendre_moment_tests {
         ip = imp.getProcessor();
 
         legendreMoment_matrix2 = zm2.extractLegendreMoment(ip);
-        //print_array(legendreMoment_matrix2,degree_m+1,degree_n+1);
 
         for(int i=0;i<=degree_m;i++){
             for(int j=0;j<=degree_n;j++){
@@ -86,14 +88,13 @@ public class Legendre_moment_tests {
         }
 
         if(passed){
-            System.out.println("TEST PASSED SUCCESSFULLY FOR EXACT MOMENT CALCULATION fOR ARTIFICIAL IMAGE");
+            //System.out.println("TEST PASSED SUCCESSFULLY FOR EXACT MOMENT CALCULATION fOR ARTIFICIAL IMAGE");
         }
         else{
             System.out.println("BAD APPROXIMATION");
         }
 
         return passed;
-
     }
 
     public static ArrayList<Roi> get_Roi(){
@@ -105,6 +106,7 @@ public class Legendre_moment_tests {
         roi3.setName("three");
 
         ArrayList<Roi> list = new ArrayList<>();
+        // keep the order same, hard-coded for testing
         list.add(roi2);
         list.add(roi1);
         list.add(roi3);
@@ -118,16 +120,17 @@ public class Legendre_moment_tests {
         ImageProcessor ip = imp.getProcessor();
         display_image(ip);
         ArrayList<Roi> rois = get_Roi();
-        int roi_size = rois.size();
         boolean passed = true;
 
         Legendre_filter_ lm = new Legendre_filter_();
         lm.applyFilter(ip,"encoding_image",get_Roi());
+        ArrayList<Pair<String,Pair<String[],Double>>> features = lm.getFeatures();
 
-        // 36 for 6*6 (default degree is 5, size of moment_matrix would be 6*6)
-        /*if(lm.getFeatures().size()!=16*roi_size){
-            System.out.println("ENCODING ERROR");
+        // display the features
+        /*for(int i=0;i<features.size();i++){
+            System.out.println(lm.getFeatures().get(i).first+" "+lm.getFeatures().get(i).second.first[0]+" "+lm.getFeatures().get(i).second.first[1]+" "+ lm.getFeatures().get(i).second.first[2]+" "+lm.getFeatures().get(i).second.second);
         }*/
+
         int k = 0;
         int roi_count = 0;
         int moment_value_count = 0;
@@ -144,12 +147,11 @@ public class Legendre_moment_tests {
                     passed = false;
                     return passed;
                 }
-                if(lm.getFeatures().get(i).second.first[0]!=d_m || lm.getFeatures().get(i).second.first[1]!=d_n){
+                if(!lm.getFeatures().get(i).second.first[0].equals("LM") || !lm.getFeatures().get(i).second.first[1].equals(Integer.toString(d_m)) || !lm.getFeatures().get(i).second.first[2].equals(Integer.toString(d_n))){
                     System.out.println("MOMENT INDEX ERROR IN ENCODING");
                     passed = false;
                     return passed;
                 }
-
                 if(Math.abs(lm.getFeatures().get(i).second.second-current_roi_moment[moment_value_count])>ERROR_EPSILON){
                     System.out.println("MOMENT VALUE ERROR IN ENCODING");
                     passed = false;
@@ -181,6 +183,5 @@ public class Legendre_moment_tests {
         }
         return passed;
     }
-
 
 }

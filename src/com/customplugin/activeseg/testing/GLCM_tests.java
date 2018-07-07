@@ -52,10 +52,10 @@ public class GLCM_tests {
         int roi_size = rois.size();
         GLCM_filter_ glcm = new GLCM_filter_();
         glcm.applyFilter(ip,"image",rois);
-        ArrayList<Pair<String,Pair<String[],Double>>> features = glcm.getFeatures();
+        ArrayList<Pair<String,Pair<String[],Double[]>>> features = glcm.getFeatures();
         System.out.println("THE SIZE OF FEATURES "+features.size());
         for(int i= 0;i<features.size();i++){
-            System.out.println(features.get(i).first+" "+features.get(i).second.first[0]+" "+features.get(i).second.first[1]+" "+features.get(i).second.first[2]+" "+features.get(i).second.second);
+            System.out.println(features.get(i).first+" "+features.get(i).second.first[0]+" "+features.get(i).second.first[1]+" "+features.get(i).second.first[2]+" "+features.get(i).second.second[0]+" "+features.get(i).second.second[1]);
         }
     }
 }

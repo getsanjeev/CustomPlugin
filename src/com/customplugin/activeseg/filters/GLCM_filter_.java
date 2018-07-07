@@ -31,7 +31,7 @@ public class GLCM_filter_ implements IFilter {
 	public static final String ENERGY_FEATURE_KEY = "energy";
 	public static final String ENTROPY_FEATURE_KEY = "entropy";
 	public static final String HOMOGENEITY_FEATURE_KEY = "homogeneity";
-	private ArrayList<Pair<String,Pair<String[],Double>>> feature_vector = new ArrayList<>();
+	private ArrayList<Pair<String,Pair<String[],Double[]>>> feature_vector = new ArrayList<>();
 
 	/* NEW VARIABLES*/
 
@@ -81,8 +81,9 @@ public class GLCM_filter_ implements IFilter {
 
 		//encoding starts
 		String[] angle_distance_pair = new String[3];
-		Pair<String[],Double> one_descriptor = new Pair<>(angle_distance_pair,0.0);
-		Pair<String,Pair<String[],Double>> one_roi_texture_descriptors = new Pair<>("",one_descriptor);
+		Double[] feature_value = new Double[2];
+		Pair<String[],Double[]> one_descriptor = new Pair<>(angle_distance_pair,feature_value);
+		Pair<String,Pair<String[],Double[]>> one_roi_texture_descriptors = new Pair<>("",one_descriptor);
 
 		angle_distance_pair[0] = feature_key;
 		angle_distance_pair[1] = Integer.toString(angle);
@@ -92,25 +93,32 @@ public class GLCM_filter_ implements IFilter {
 		one_descriptor.first = angle_distance_pair;
 
 		if (feature_key==ASM_FEATURE_KEY){
-			one_descriptor.second = glcm.getAngular2ndMoment();
+			one_descriptor.second[0] = glcm.getAngular2ndMoment();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==CORRELATION_FEATURE_KEY){
-			one_descriptor.second = glcm.getCorrelation();
+			one_descriptor.second[0] = glcm.getCorrelation();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==CONTRAST_FEATURE_KEY){
-			one_descriptor.second = glcm.getContrast();
+			one_descriptor.second[0] = glcm.getContrast();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==DISSIMILARITY_FEATURE_KEY){
-			one_descriptor.second = glcm.getDissimilarity();
+			one_descriptor.second[0] = glcm.getDissimilarity();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==ENERGY_FEATURE_KEY){
-			one_descriptor.second = glcm.getEnergy();
+			one_descriptor.second[0] = glcm.getEnergy();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==ENTROPY_FEATURE_KEY){
-			one_descriptor.second = glcm.getEntropy();
+			one_descriptor.second[0] = glcm.getEntropy();
+			one_descriptor.second[1] = 0.0;
 		}
 		else if(feature_key==HOMOGENEITY_FEATURE_KEY){
-			one_descriptor.second = glcm.getHomogeneity();
+			one_descriptor.second[0] = glcm.getHomogeneity();
+			one_descriptor.second[1] = 0.0;
 		}
 
 		one_roi_texture_descriptors.first = roi_name;
@@ -202,7 +210,7 @@ public class GLCM_filter_ implements IFilter {
 	}
 
 	@Override
-	public ArrayList<Pair<String,Pair<String[],Double>>> getFeatures() {
+	public ArrayList<Pair<String,Pair<String[],Double[]>>> getFeatures() {
 		// TODO Auto-generated method stub
 		return feature_vector;
 	}

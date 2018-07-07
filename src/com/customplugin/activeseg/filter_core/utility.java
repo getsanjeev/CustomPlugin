@@ -7,30 +7,31 @@ import ij.process.ImageProcessor;
 
 public class utility {
     public static void main(String[] args){
-        String path="/media/albus/Horcrux/CustomPlugin/test_images/glcm_unity_test.png";
+        String path="/media/albus/Horcrux/CustomPlugin/test_images/imp.png";
         ImagePlus imp=IJ.openImage(path);
         ImageConverter ic=new ImageConverter(imp);
         ic.convertToGray8();
         ImageProcessor ip = imp.getProcessor();
 
         System.out.println("Displaying the image pixels");
-        display_image(ip,0,10,0,10);
+        display_image(ip);
+        //display_image(ip,0,10,0,10);
 
-        GLCMTextureDescriptors glcm = new GLCMTextureDescriptors(1,270);
+        GLCMTextureDescriptors glcm = new GLCMTextureDescriptors();
+        glcm.set_values(1,270);
         glcm.extractGLCMDescriptors(ip);
-        System.out.println("Entropy "+glcm.getEntropy()); //Okay
         System.out.println("AM "+glcm.getAngular2ndMoment()); //OKay
         System.out.println("Correlation "+glcm.getCorrelation());// Okay
-        System.out.println("Homogeneity "+glcm.getHomogeneity()); //Okay
+        System.out.println("Contrast "+glcm.getContrast());//okay
         System.out.println("Energy "+glcm.getEnergy());//Okay
-        System.out.println("Contrast "+glcm.getContrast());
-        System.out.println("Dissimilarity "+glcm.getDissimilarity());
+        System.out.println("Entropy "+glcm.getEntropy());
+        System.out.println("Dissimilarity "+glcm.getDissimilarity());//okay
+        System.out.println("Homogeneity "+glcm.getHomogeneity()); //Okay
 
         glcm.getCorrelation();
         glcm.getEnergy();
         glcm.getEntropy();
         glcm.getHomogeneity();
-        glcm.getInertia();
 
 
 

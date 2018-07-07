@@ -125,12 +125,14 @@ public class Legendre_moment_tests {
 
         Legendre_filter_ lm = new Legendre_filter_();
         lm.applyFilter(ip,"encoding_image",get_Roi());
-        ArrayList<Pair<String,Pair<String[],Double>>> features = lm.getFeatures();
+        ArrayList<Pair<String,Pair<String[],Double[]>>> features = lm.getFeatures();
 
         // display the features
-        /*for(int i=0;i<features.size();i++){
-            System.out.println(lm.getFeatures().get(i).first+" "+lm.getFeatures().get(i).second.first[0]+" "+lm.getFeatures().get(i).second.first[1]+" "+ lm.getFeatures().get(i).second.first[2]+" "+lm.getFeatures().get(i).second.second);
-        }*/
+/*
+        for(int i=0;i<features.size();i++){
+            System.out.println(lm.getFeatures().get(i).first+" "+lm.getFeatures().get(i).second.first[0]+" "+lm.getFeatures().get(i).second.first[1]+" "+ lm.getFeatures().get(i).second.first[2]+" "+lm.getFeatures().get(i).second.second[0]+" "+lm.getFeatures().get(i).second.second[1]);
+        }
+*/
 
         int k = 0;
         int roi_count = 0;
@@ -153,7 +155,12 @@ public class Legendre_moment_tests {
                     passed = false;
                     return passed;
                 }
-                if(Math.abs(lm.getFeatures().get(i).second.second-current_roi_moment[moment_value_count])>ERROR_EPSILON){
+                if(Math.abs(lm.getFeatures().get(i).second.second[0]-current_roi_moment[moment_value_count])>ERROR_EPSILON){
+                    System.out.println("MOMENT VALUE ERROR IN ENCODING");
+                    passed = false;
+                    return passed;
+                }
+                if(Math.abs(lm.getFeatures().get(i).second.second[1]-0.0)>ERROR_EPSILON){
                     System.out.println("MOMENT VALUE ERROR IN ENCODING");
                     passed = false;
                     return passed;

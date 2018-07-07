@@ -30,7 +30,7 @@ public class Legendre_filter_ implements IFilter {
 	/*List< Pair<String, T: Pair<Int[], Double>> with
 	int[0] m
 	int[1] n*/
-	private ArrayList<Pair<String,Pair<String[],Double>>> moment_vector = new ArrayList<>();
+	private ArrayList<Pair<String,Pair<String[],Double[]>>> moment_vector = new ArrayList<>();
 
 	//private Pair<String,Pair<String[],Double>> moment_vector = new Pair<String,Pair<String[],Double>>[33];
 
@@ -55,13 +55,15 @@ public class Legendre_filter_ implements IFilter {
         for(int i=0;i<=degree;i++){
             for(int j=0;j<=degree;j++){
                 String[] order_index = new String[3];
-                Pair<String[],Double> order = new Pair<>(order_index,0.0);
-                Pair<String,Pair<String[],Double>> one_roi_moment = new Pair<>("",order);
+                Double[] moment_values = new Double[2];
+                Pair<String[],Double[]> order = new Pair<>(order_index,moment_values);
+                Pair<String,Pair<String[],Double[]>> one_roi_moment = new Pair<>("",order);
                 order_index[0] = LM_FEATURE_KEY;
             	order_index[1] = Integer.toString(i);
             	order_index[2] = Integer.toString(j);
             	order.first = order_index;
-            	order.second = moment_matrix[i][j];
+            	order.second[0] = moment_matrix[i][j];
+				order.second[1] = 0.0;
             	one_roi_moment.first = roi_name;
             	one_roi_moment.second = order;
                 moment_vector.add(one_roi_moment);
@@ -150,7 +152,7 @@ public class Legendre_filter_ implements IFilter {
 	}
 
 	@Override
-	public ArrayList<Pair<String,Pair<String[],Double>>> getFeatures() {
+	public ArrayList<Pair<String,Pair<String[],Double[]>>> getFeatures() {
 		// TODO Auto-generated method stub
 		return moment_vector;
 	}

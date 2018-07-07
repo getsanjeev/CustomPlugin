@@ -17,9 +17,10 @@ public class Legendre_moment_tests {
 
     public static Double [] constant_unity_moments_3_3_ELM = {1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
     public static Double [] test_artificial_moments_3_3_ELM = {5.6874,-0.3281,0.8203,0.4990,0.7969,0.2461,-1.3184,0.2410,-0.8203,-0.4395,5.4932,0.4486,-0.5674,-0.6819,-0.9613,2.0240};
-    public static String PATH_CONSTANT_UNITY = "/media/albus/Horcrux/CustomPlugin/test_images/constant_unity.png";
-    public static String PATH_ARTIFICIAL = "/media/albus/Horcrux/CustomPlugin/test_images/test2_artificial.png";
-    public static String PATH_ENCODING_TEST = "/media/albus/Horcrux/CustomPlugin/test_images/encoding_test_image.png";
+    public static String BASE_PATH = "/home/albus/CustomPlugin/test_images/";
+    public static String PATH_CONSTANT_UNITY = BASE_PATH+"constant_unity.png";
+    public static String PATH_ARTIFICIAL = BASE_PATH+"test2_artificial.png";
+    public static String PATH_ENCODING_TEST = BASE_PATH+"encoding_test_image.png";
 
     public static Double ERROR_EPSILON = 0.0001;
 

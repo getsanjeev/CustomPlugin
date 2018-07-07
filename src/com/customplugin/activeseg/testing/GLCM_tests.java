@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import static com.customplugin.activeseg.filter_core.utility.display_image;
 
 public class GLCM_tests {
-
-    public static String PATH_CONSTANT_UNITY = "/media/albus/Horcrux/CustomPlugin/test_images/constant_unity.png";
-    public static String PATH_ARTIFICIAL = "/media/albus/Horcrux/CustomPlugin/test_images/test2_artificial.png";
-    public static String PATH_ENCODING_TEST = "/media/albus/Horcrux/CustomPlugin/test_images/encoding_test_image.png";
+    //TODO : This should be made more meaningful, add checks on return style like done in LegendreMomentTests
+    public static String BASE_PATH = "/home/albus/CustomPlugin/test_images/";
+    public static String PATH_CONSTANT_UNITY = BASE_PATH+"constant_unity.png";
+    public static String PATH_ARTIFICIAL = BASE_PATH+"/test2_artificial.png";
+    public static String PATH_ENCODING_TEST = BASE_PATH+"encoding_test_image.png";
 
     public static Double ERROR_EPSILON = 0.0001;
 

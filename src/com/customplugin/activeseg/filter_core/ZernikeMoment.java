@@ -53,7 +53,7 @@ public class ZernikeMoment {
 		System.out.println("Start Zernike moment extraction process");
 		calculateRadius(ip);
 		
-		ArrayList<Double> real = null; 
+		ArrayList<Double> real = null;
     	ArrayList<Double> imag = null;
     	if(rv==null)
     		rv = new RadialValue[ip.getHeight()*ip.getWidth()];
@@ -92,8 +92,6 @@ public class ZernikeMoment {
         		
         		zps[index].setComplex(real, imag);
         		index++;
-        		
-        		 	
          	}
        }
         
@@ -116,15 +114,25 @@ public class ZernikeMoment {
 		return new Complex(real_result, imag_result);
 	}
 	public static void main(String[] args){
-		String path="/home/mg/Downloads/tifs/image.tif";
-    	ImagePlus imp=IJ.openImage(path);
+		String BASE_PATH = "/home/albus/CustomPlugin/test_images/";
+		String PATH_CONSTANT_UNITY = BASE_PATH+"imp.png";
+
+    	ImagePlus imp=IJ.openImage(PATH_CONSTANT_UNITY);
     	ImageConverter ic=new ImageConverter(imp);
     	ic.convertToGray8();
     	
     	ImageProcessor ip=imp.getProcessor();
-    	ZernikeMoment zm=new ZernikeMoment(8);
+    	ZernikeMoment zm=new ZernikeMoment(4);
     	long aa=System.currentTimeMillis();
-    	zm.extractZernikeMoment(ip);
+    	Complex com=zm.extractZernikeMoment(ip);
+		System.out.println("real");
+		System.out.println(com.m_real.length);
+    	utility.print_array(com.m_real);
+		System.out.println();
+		System.out.println();
+		System.out.println("imaginary");
+		System.out.println(com.m_imaginary.length);
+		utility.print_array(com.m_imaginary);
     	long bb=System.currentTimeMillis();
     	System.out.println(bb-aa);
 	}

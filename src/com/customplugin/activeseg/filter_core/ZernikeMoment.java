@@ -116,8 +116,9 @@ public class ZernikeMoment {
 	public static void main(String[] args){
 		String BASE_PATH = "/home/albus/CustomPlugin/test_images/";
 		String PATH_CONSTANT_UNITY = BASE_PATH+"imp.png";
+		String PATH_ENCODING_TEST = BASE_PATH+"encoding_test_image.png";
 
-    	ImagePlus imp=IJ.openImage(PATH_CONSTANT_UNITY);
+    	ImagePlus imp=IJ.openImage(PATH_ENCODING_TEST);
     	ImageConverter ic=new ImageConverter(imp);
     	ic.convertToGray8();
     	

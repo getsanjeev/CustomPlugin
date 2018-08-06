@@ -1,8 +1,10 @@
+
 package com.customplugin.activeseg.filtersv2;
 
 
 import activeSegmentation.IFilter;
 import com.customplugin.activeseg.filter_core.GLCMTextureDescriptors;
+
 import ij.IJ;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -14,6 +16,7 @@ import java.util.List;
 
 
 /**
+ * NEEDS AN UPDATED IMAGEJ JAR
  */
 
 

@@ -195,7 +195,6 @@ public class GLCM_filter_ implements IFilter {
 		return feature_vector;
 	}
 
-	@Override
 	public Set<String> getFeatureNames() {
 		// TODO Auto-generated method stub
 		return this.features;

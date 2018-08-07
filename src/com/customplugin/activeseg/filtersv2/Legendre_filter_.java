@@ -159,7 +159,6 @@ public class Legendre_filter_ implements IFilter {
 		return moment_vector;
 	}
 
-	@Override
 	public Set<String> getFeatureNames() {
 		// TODO Auto-generated method stub
 		return this.features;

@@ -13,6 +13,9 @@
 Now these filters have been added to the Active Segmentation toolbox itself through addition of source code. To run this project follow these easy steps :
 
 1. First of all install Active Segmentation and imageJ, follow [this](https://sumit3203.github.io/install.html) or simply download the [IJ+ActiveSegmentation Bundle](https://drive.google.com/open?id=185H_IDnkUnANp1oPYZ045H3VkyjFbhAR)
+
+Note: Tested with Java8
+
 2. Now you have ImageJ and Active Segmentation installed.
 3. To perform Classification :  Follow this [tutorial](https://getsanjeev.github.io/demo_gsoc.html).
 4. To perform Segmentation : Follow this [tutorial](https://sumit3203.github.io/userguide.html).
@@ -32,5 +35,5 @@ During adding it to ActiveSegmentation toolbox we changed the encoding as per in
 #### Prerequisites
 
 The following must be installed and configured:
-* Java
+* Java 8
 * ImageJ
